@@ -1,4 +1,5 @@
 #! /usr/bin/python3
+# -*- coding: utf-8 -*-
 
 '''
 exponential backoff states that:
@@ -29,7 +30,7 @@ class EBSimulator:
         E = (1/(N+1)) * ((N*(N+1))/2)
         print(E)
         
-COLLISIONS = 3
+COLLISIONS = 4
 
 EBS = EBSimulator(COLLISIONS)
 EBS.get_backoff(COLLISIONS)
