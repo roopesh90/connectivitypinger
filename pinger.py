@@ -12,6 +12,7 @@ exponential backoff states that:
 
 import math, os, subprocess, inspect
 import urllib.request
+import time
 
 class EBSimulator:
     def __init__(self, collisions=0):
@@ -21,23 +22,17 @@ class EBSimulator:
     def calc_collision_slots(self):
         '''N = '''
         self.N_SLOTS = int(math.pow(2,self.COLLISIONS)) - 1
-        print(self.COLLISIONS)
-        print(self.N_SLOTS)
     
     def get_backoff(self, collisions=0):
-        self.collisions = collisions
+        self.COLLISIONS = collisions
         self.calc_collision_slots()
         N = self.N_SLOTS
         E = (1/(N+1)) * ((N*(N+1))/2)
-        print(E)
+        return E
         
-def check_connectivity(reference):
-    try:
-        urllib.request.urlopen(reference, timeout=1)
-        return True
-    except urllib.request.URLError:
-        return False
-
+    def get_backoff_msecs(self,collisions=0):
+        return int(self.get_backoff(collisions)*1000)
+        
 
 def sendmessage(timeout, logo, heading, message):
     URGENCY = "critical"
@@ -46,24 +41,94 @@ def sendmessage(timeout, logo, heading, message):
     logo_path = script_path.replace(script_name, logo)
     subprocess.Popen(['notify-send', '-u', URGENCY, '-i', logo_path, '-t', timeout, heading, message])
     return
+
+class ConnectionState:
+    def __init__(self, collisions=1, state=1,):
+        self.connection_state = state
+        self.collisions = state
     
+    def get_state(self):
+        return self.connection_state
+        
+    def set_state(self, state):
+        self.connection_state = state
+    
+    def make_message(self):
+        state = NOTIF['state'][self.connection_state]
+        sendmessage(NOTIF[state]['timeout'], NOTIF[state]['icon'], NOTIF[state]['heading'], NOTIF[state]['message'])
+    
+    def check_connectivity(self, reference):
+        try:
+            urllib.request.urlopen(reference, timeout=1)
+            self.connection_state = 1
+            
+        except urllib.request.URLError:
+            self.connection_state = 0
+            
+    
+    def check_state(self, url):
+        self.check_connectivity(url)
+        # print ()
+
 WEB = {}
 WEB['protocol'] = "http"
 WEB['reference'] = "www.google.com"
 WEB['url'] = "%s://%s" % (WEB['protocol'], WEB['reference'])
 NOTIF={}
-NOTIF['discon_icon']="disconnected.png"
-NOTIF['con_icon']="connected.png"
-NOTIF['discon_timeout']="3000"
-NOTIF['con_timeout']="4500"
+NOTIF['state']={}
+NOTIF['state'][1]='con'
+NOTIF['state'][0]='discon'
+NOTIF['discon']={}
+NOTIF['discon']['icon']="disconnected.png"
+NOTIF['discon']['timeout']="3000"
+NOTIF['discon']['message']="Will let you know when its back, ASAP!"
+NOTIF['discon']['heading']="The Internet went CAPUT"
+NOTIF['con']={}
+NOTIF['con']['icon']="connected.png"
+NOTIF['con']['timeout']="4500"
+NOTIF['con']['message']="Its back, ITS BACK!!!\n HUSTLE, we're back in action"
+NOTIF['con']['heading']="The Internet back"
 
-# for disconnection
-sendmessage(NOTIF['discon_timeout'] , NOTIF['discon_icon'], "The Internet went CAPUT", "Will let you know when its back, ASAP!")
-# for connection
-sendmessage(NOTIF['con_timeout'], NOTIF['con_icon'], "The Internet back", "Its back, ITS BACK!!!\n HUSTLE, we're back in action")
-# While
-print( )
-COLLISIONS = 7
+COLLISIONS = 1
 
 EBS = EBSimulator(COLLISIONS)
-# EBS.get_backoff(COLLISIONS)
+con_state = ConnectionState(COLLISIONS)
+
+con_state.check_state(WEB['url'])
+PREV_STATE = con_state.get_state()
+CURRENT_STATE = con_state.get_state()
+
+def do_the_needful(state=1,show_msg=True):
+    global COLLISIONS
+    print(NOTIF['state'][state])
+    if show_msg:
+        con_state.make_message()
+    if state ==1:
+        time.sleep(5)
+        COLLISIONS=0
+    else:
+        secs = EBS.get_backoff(COLLISIONS)
+        COLLISIONS+=1
+        print(secs)
+        time.sleep(secs)
+
+# print(EBS.get_backoff(COLLISIONS))
+
+
+while True:
+    CURRENT_STATE = con_state.get_state()
+    con_state.check_state(WEB['url'])
+    if CURRENT_STATE != PREV_STATE:
+        PREV_STATE = CURRENT_STATE
+        do_the_needful(CURRENT_STATE) 
+    else:
+        do_the_needful(CURRENT_STATE,0)
+        
+    
+
+# for disconnection
+# sendmessage(NOTIF['discon']['timeout'] , NOTIF['discon']['icon'], NOTIF['discon']['heading'], NOTIF['discon']['message'])
+# for connection
+# sendmessage(NOTIF['con']['timeout'], NOTIF['con']['icon'], NOTIF['con']['heading'], NOTIF['con']['message'])
+# While
+print( )
