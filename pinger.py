@@ -10,7 +10,8 @@ exponential backoff states that:
     (1/(N+1))*(n∑i,i=0), where (n∑i,i=0) = ((n*(n+1))/2)
 '''
 
-import math
+import math, os, subprocess, inspect
+import urllib.request
 
 class EBSimulator:
     def __init__(self, collisions=0):
@@ -30,7 +31,39 @@ class EBSimulator:
         E = (1/(N+1)) * ((N*(N+1))/2)
         print(E)
         
-COLLISIONS = 4
+def check_connectivity(reference):
+    try:
+        urllib.request.urlopen(reference, timeout=1)
+        return True
+    except urllib.request.URLError:
+        return False
+
+
+def sendmessage(timeout, logo, heading, message):
+    URGENCY = "critical"
+    script_name = inspect.getfile(inspect.currentframe())
+    script_path = os.path.realpath(__file__)
+    logo_path = script_path.replace(script_name, logo)
+    subprocess.Popen(['notify-send', '-u', URGENCY, '-i', logo_path, '-t', timeout, heading, message])
+    return
+    
+WEB = {}
+WEB['protocol'] = "http"
+WEB['reference'] = "www.google.com"
+WEB['url'] = "%s://%s" % (WEB['protocol'], WEB['reference'])
+NOTIF={}
+NOTIF['discon_icon']="disconnected.png"
+NOTIF['con_icon']="connected.png"
+NOTIF['discon_timeout']="3000"
+NOTIF['con_timeout']="4500"
+
+# for disconnection
+sendmessage(NOTIF['discon_timeout'] , NOTIF['discon_icon'], "The Internet went CAPUT", "Will let you know when its back, ASAP!")
+# for connection
+sendmessage(NOTIF['con_timeout'], NOTIF['con_icon'], "The Internet back", "Its back, ITS BACK!!!\n HUSTLE, we're back in action")
+# While
+print( )
+COLLISIONS = 7
 
 EBS = EBSimulator(COLLISIONS)
-EBS.get_backoff(COLLISIONS)
+# EBS.get_backoff(COLLISIONS)
