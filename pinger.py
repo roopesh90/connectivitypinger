@@ -103,17 +103,16 @@ def do_the_needful(state=1,show_msg=True):
     checks state and sends notification message
     '''
     global COLLISIONS
-    print(NOTIF['state'][state])
+    # print(NOTIF['state'][state])
     if show_msg:
         con_state.make_message()
+    secs = EBS.get_backoff(COLLISIONS)
     if state ==1:
-        time.sleep(5)
         COLLISIONS=0
     else:
-        secs = EBS.get_backoff(COLLISIONS)
         COLLISIONS+=1
-        print(secs)
-        time.sleep(secs)
+    # print(secs)
+    time.sleep(secs)
 
 while True:
     CURRENT_STATE = con_state.get_state()
