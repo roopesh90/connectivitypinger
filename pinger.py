@@ -13,6 +13,7 @@ exponential backoff states that:
 import math, os, subprocess, inspect
 import urllib.request
 import time
+from socket import timeout
 
 class EBSimulator:
     def __init__(self, collisions=0):
@@ -62,7 +63,7 @@ class ConnectionState:
             urllib.request.urlopen(reference, timeout=1)
             self.connection_state = 1
             
-        except urllib.request.URLError:
+        except (urllib.request.URLError, timeout):
             self.connection_state = 0
             
     
