@@ -28,6 +28,8 @@ On a successful:
 
 the script send a notification using notify-send.
 
+> **PS:** Do remember, this will silently run in the background :)
+
 ### Requirements
 - python3
 - notify-send 
@@ -40,6 +42,8 @@ the script send a notification using notify-send.
 - ~~check socket timeout issue and fix~~
 - ~~clean and make code legible~~
 - ~~Implement backoff of both disconnection and connection~~
+- back it a shell callable
+- Way to get kill the script form terminal, one command
 
 
 I'm open to all suggestion and feedback.
