@@ -43,7 +43,7 @@ the script send a notification using notify-send.
 - ~~clean and make code legible~~
 - ~~Implement backoff of both disconnection and connection~~
 - ~~make notifications audible~~
-- back it a shell callable
+- back it as a shell callable
 - Way to get kill the script form terminal, one command
 
 
