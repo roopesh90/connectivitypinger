@@ -1,21 +1,15 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''
-exponential backoff states that:
-    Given a uniform distribution of backoff times, the expected backoff time is the mean of the possibilities.
-    That is, after c collisions, the number of backoff slots is in 
-        [0, 1, ..., N], where N = 2c - 1 
-    and the expected backoff time (in slots) is:
-    (1/(N+1))*(n∑i,i=0), where (n∑i,i=0) = ((n*(n+1))/2)
-'''
-
 import math, os, subprocess, inspect
 import urllib.request
 import time
 from socket import timeout
 
 class EBSimulator:
+    '''
+    generate backoff-time/timeout based on Exponential backoff
+    '''
     def __init__(self, collisions=0):
         self.COLLISIONS = collisions
         self.N_SLOTS = 0
@@ -36,6 +30,9 @@ class EBSimulator:
         
 
 def sendmessage(timeout, logo, heading, message):
+    '''
+    makes notification
+    '''
     URGENCY = "critical"
     script_name = inspect.getfile(inspect.currentframe())
     script_path = os.path.realpath(__file__)
@@ -43,7 +40,11 @@ def sendmessage(timeout, logo, heading, message):
     subprocess.Popen(['notify-send', '-u', URGENCY, '-i', logo_path, '-t', timeout, heading, message])
     return
 
+
 class ConnectionState:
+    '''
+    check and set connection state
+    '''
     def __init__(self, collisions=1, state=1,):
         self.connection_state = state
         self.collisions = state
@@ -66,10 +67,8 @@ class ConnectionState:
         except (urllib.request.URLError, timeout):
             self.connection_state = 0
             
-    
     def check_state(self, url):
         self.check_connectivity(url)
-        # print ()
 
 WEB = {}
 WEB['protocol'] = "http"
@@ -100,6 +99,9 @@ PREV_STATE = con_state.get_state()
 CURRENT_STATE = con_state.get_state()
 
 def do_the_needful(state=1,show_msg=True):
+    '''
+    checks state and sends notification message
+    '''
     global COLLISIONS
     print(NOTIF['state'][state])
     if show_msg:
@@ -113,9 +115,6 @@ def do_the_needful(state=1,show_msg=True):
         print(secs)
         time.sleep(secs)
 
-# print(EBS.get_backoff(COLLISIONS))
-
-
 while True:
     CURRENT_STATE = con_state.get_state()
     con_state.check_state(WEB['url'])
@@ -125,11 +124,3 @@ while True:
     else:
         do_the_needful(CURRENT_STATE,0)
         
-    
-
-# for disconnection
-# sendmessage(NOTIF['discon']['timeout'] , NOTIF['discon']['icon'], NOTIF['discon']['heading'], NOTIF['discon']['message'])
-# for connection
-# sendmessage(NOTIF['con']['timeout'], NOTIF['con']['icon'], NOTIF['con']['heading'], NOTIF['con']['message'])
-# While
-print( )

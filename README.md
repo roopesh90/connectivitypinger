@@ -38,7 +38,7 @@ the script send a notification using notify-send.
 #### To Do:
 
 - ~~check socket timeout issue and fix~~
-- clean and make code legible
+- ~~clean and make code legible~~
 - Implement backoff of both disconnection and connection
 
 
