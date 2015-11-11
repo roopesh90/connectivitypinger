@@ -48,7 +48,8 @@ the script send a notification using notify-send.
 
 
 I'm open to all suggestion and feedback.
-Also, I have a very faint feeling I'm doing it wrong, if so, please to let me know
+
+Also, I have a very faint feeling I'm doing it wrong, if so, please do let me know
 
 [exp_backoff]:https://en.wikipedia.org/wiki/Exponential_backoff
 [summation]:https://en.wikipedia.org/wiki/Summation
