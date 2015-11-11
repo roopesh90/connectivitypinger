@@ -28,13 +28,17 @@ On a successful:
 
 the script send a notification using notify-send.
 
+### Requirements
+- python3
+- notify-send 
+    - install using `sudo apt-get install notify-osd`
+
 ----
 
 #### To Do:
 
 - ~~check socket timeout issue and fix~~
 - clean and make code legible
-- Implement backoff of both disconnection and connection
 - Implement backoff of both disconnection and connection
 
 
