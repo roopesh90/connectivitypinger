@@ -103,15 +103,12 @@ def do_the_needful(state=1,show_msg=True):
     checks state and sends notification message
     '''
     global COLLISIONS
-    # print(NOTIF['state'][state])
+    print(NOTIF['state'][state])
     if show_msg:
         con_state.make_message()
     secs = EBS.get_backoff(COLLISIONS)
-    if state ==1:
-        COLLISIONS=0
-    else:
-        COLLISIONS+=1
-    # print(secs)
+    COLLISIONS+=1
+    print(secs)
     time.sleep(secs)
 
 while True:
@@ -119,6 +116,7 @@ while True:
     con_state.check_state(WEB['url'])
     if CURRENT_STATE != PREV_STATE:
         PREV_STATE = CURRENT_STATE
+        COLLISIONS=0
         do_the_needful(CURRENT_STATE) 
     else:
         do_the_needful(CURRENT_STATE,0)
