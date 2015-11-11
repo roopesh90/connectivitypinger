@@ -106,8 +106,12 @@ def do_the_needful(state=1,show_msg=True):
     print(NOTIF['state'][state])
     if show_msg:
         con_state.make_message()
+        os.system('play --no-show-progress --null --channels 1 synth %s sine %f' % ( 0.15, 800))
+        
     secs = EBS.get_backoff(COLLISIONS)
     COLLISIONS+=1
+    if state ==0:
+        secs /= 2
     print(secs)
     time.sleep(secs)
 
@@ -117,7 +121,7 @@ while True:
     if CURRENT_STATE != PREV_STATE:
         PREV_STATE = CURRENT_STATE
         COLLISIONS=0
-        do_the_needful(CURRENT_STATE) 
+        do_the_needful(CURRENT_STATE)
     else:
         do_the_needful(CURRENT_STATE,0)
         
