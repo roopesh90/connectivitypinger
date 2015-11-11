@@ -42,6 +42,7 @@ the script send a notification using notify-send.
 - ~~check socket timeout issue and fix~~
 - ~~clean and make code legible~~
 - ~~Implement backoff of both disconnection and connection~~
+- ~~make notifications audible~~
 - back it a shell callable
 - Way to get kill the script form terminal, one command
 
