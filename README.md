@@ -4,7 +4,7 @@
 
 ### Background
 
-To explore how [Exponential backoff][exp_backoff] works, I wrote this script that helps check if the system is connected to the Internet of not.
+To explore how [Exponential backoff][exp_backoff] works, I wrote this script that helps check if the system is connected to the Internet of not. Another reason for making the script is, I was fed up with my ISP resetting my connection, since I'm on shh, it kept timing out and the only way to find/notify disconnection was through Dropbox, and it takes for ever.
 
 Exponential back-off states that:
 
